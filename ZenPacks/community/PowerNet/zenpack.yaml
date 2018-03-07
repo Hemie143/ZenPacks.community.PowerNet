@@ -1,0 +1,77 @@
+name: ZenPacks.community.PowerNet
+
+classes:
+  PowerNetDevice:
+    base: [zenpacklib.Device]
+    label: PowerNet UPS Device
+    monitoring_templates: [SnmpPowerNet]
+    properties:
+      model:
+        type: string
+        label: Model
+      numBatteryPacks:
+        type: string
+        label: Number of battery packs
+      numBadBatteryPacks:
+        type: string
+        label: Number of bad battery packs
+      basicOutputStatus:
+        type: string
+        label: Output status
+
+device_classes:
+  /Power/UPS/PowerNet:
+    zProperties:
+      zPythonClass: ZenPacks.community.PowerNet.PowerNetDevice
+      zSnmpMonitorIgnore: false
+      zCollectorPlugins:
+        - zenoss.snmp.NewDeviceMap
+        - zenoss.snmp.DeviceMap
+        - zenoss.snmp.SnmpV3EngineIdMap
+        - zenoss.snmp.InterfaceMap
+        - community.snmp.PowerNetDevice
+      zDeviceTemplates:
+        - Device
+
+    templates:
+      SnmpPowerNet:
+        targetPythonClass: ZenPacks.community.PowerNet.PowerNetDevice
+        datasources:
+          battery:
+            type: Python
+            plugin_classname: ZenPacks.community.PowerNet.dsplugins.SnmpPowerNet.SnmpPowerNetDev
+            datapoints:
+                batteryStatus:
+                  rrdtype: GAUGE
+                batteryCapacity:
+                  rrdtype: GAUGE
+                batteryRunTimeRemaining:
+                  rrdtype: GAUGE
+
+        graphs:
+          Battery Status:
+            height: 100
+            width: 1000
+            miny: 1
+            maxy: 4
+            graphpoints:
+              Status:
+                dpName: battery_batteryStatus
+          Battery Capacity:
+            height: 100
+            width: 1000
+            miny: 0
+            maxy: 100
+            units: percent
+            graphpoints:
+              Capacity:
+                dpName: battery_batteryCapacity
+          Battery RunTime remaining:
+            height: 100
+            width: 1000
+            graphpoints:
+              RunTimeRemaining:
+                dpName: battery_batteryRunTimeRemaining
+
+
+
