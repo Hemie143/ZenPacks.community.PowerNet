@@ -12,40 +12,15 @@ class PowerNetInputPhase(SnmpPlugin):
                     ),
         )
 
-    voltageOrMap = {
-        1: 'Unknown',
-        2: 'Single Phase',
-        3: 'Split Phase',
-        4: 'Three Phase to Neutral',
-        5: 'Three Phase',
-    }
-
-    typeMap = {
-        1: 'Unknown',
-        2: 'Main',
-        3: 'Bypass',
-    }
-
     def process(self, device, results, log):
         log.info("Processing %s for device %s", self.name(), device.id)
         getdata, tabledata = results
-        maps = []
-
-        '''
-        inputPhaseRelMap = RelationshipMap(
-            relname='powerNetInputPhases',
-            modname='ZenPacks.community.PowerNet.PowerNetInputPhase')
-        '''
-        # iphase_maps = []
         iphase_maps = {}
         rm = []
 
         for snmpindex, row in tabledata.get('upsPhaseInputPhaseTable', {}).items():
             om_iphase = ObjectMap()
             snmpindex = snmpindex.strip('.')
-            log.debug('snmpindex:{}'.format(snmpindex))
-            log.debug('row:{}'.format(row))
-
             inputIndex = row.get('upsPhaseInputPhaseTableIndex')
             inputPhaseIndex = row.get('upsPhaseInputPhaseIndex')
 
@@ -59,7 +34,6 @@ class PowerNetInputPhase(SnmpPlugin):
             iphase_maps[input_compname].extend([om_iphase])
 
         for compname, objmaps in iphase_maps.iteritems():
-            log.debug('** k:{} = v:{}'.format(compname, objmaps))
             rm.append(RelationshipMap(
                 relname='powerNetInputPhases',
                 compname=compname,
