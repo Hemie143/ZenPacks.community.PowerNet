@@ -1,5 +1,11 @@
 name: ZenPacks.community.PowerNet
 
+class_relationships:
+  - PowerNetDevice 1:MC PowerNetInput
+  - PowerNetDevice 1:MC PowerNetOutput
+  - PowerNetInput 1:MC PowerNetInputPhase
+  - PowerNetOutput 1:MC PowerNetOutputPhase
+
 classes:
   PowerNetDevice:
     base: [zenpacklib.Device]
@@ -19,6 +25,52 @@ classes:
         type: string
         label: Output status
 
+  PowerNetInput:
+    base: [zenpacklib.Component]
+    label: Input
+    monitoring_templates: [PowerNetInput]
+    properties:
+      index:
+        label: Index
+      numPhases:
+        label: Phases
+      orientation:
+        label: Voltage orientation
+      inputType:
+        label: Input type
+
+  PowerNetInputPhase:
+    base: [zenpacklib.Component]
+    label: Input Phase
+    monitoring_templates: [PowerNetInputPhase]
+    properties:
+      inputIndex:
+        label: Input Index
+      index:
+        label: Index
+
+  PowerNetOutput:
+    base: [zenpacklib.Component]
+    label: Output
+    monitoring_templates: [PowerNetOutput]
+    properties:
+      index:
+        label: Index
+      numPhases:
+        label: Phases
+      orientation:
+        label: Voltage orientation
+
+  PowerNetOutputPhase:
+    base: [zenpacklib.Component]
+    label: Input Pahse
+    monitoring_templates: [PowerNetOutputPhase]
+    properties:
+      outputIndex:
+        label: Output Index
+      index:
+        label: Index
+
 device_classes:
   /Power/UPS/PowerNet:
     zProperties:
@@ -30,6 +82,8 @@ device_classes:
         - zenoss.snmp.SnmpV3EngineIdMap
         - zenoss.snmp.InterfaceMap
         - community.snmp.PowerNetDevice
+        - community.snmp.PowerNetInput
+        - community.snmp.PowerNetOutput
       zDeviceTemplates:
         - Device
 
@@ -37,7 +91,7 @@ device_classes:
       SnmpPowerNet:
         targetPythonClass: ZenPacks.community.PowerNet.PowerNetDevice
         datasources:
-          battery:
+          ups:
             type: Python
             plugin_classname: ZenPacks.community.PowerNet.dsplugins.SnmpPowerNet.SnmpPowerNetDev
             datapoints:
@@ -47,31 +101,115 @@ device_classes:
                   rrdtype: GAUGE
                 batteryRunTimeRemaining:
                   rrdtype: GAUGE
-
+                upsOutputLoad:
+                  rrdtype: GAUGE
+                upsAdvBatteryNominalVoltage:
+                  rrdtype: GAUGE
+                upsAdvBatteryActualVoltage:
+                  rrdtype: GAUGE
+                upsAdvBatteryCurrent:
+                  rrdtype: GAUGE
+                upsAdvBatteryTemperature:
+                  rrdtype: GAUGE
         graphs:
-          Battery Status:
-            height: 100
-            width: 1000
-            miny: 1
-            maxy: 4
-            graphpoints:
-              Status:
-                dpName: battery_batteryStatus
-          Battery Capacity:
+          UPS Capacity:
             height: 100
             width: 1000
             miny: 0
             maxy: 100
             units: percent
             graphpoints:
-              Capacity:
-                dpName: battery_batteryCapacity
+              Battery Capacity:
+                dpName: ups_batteryCapacity
+              Output Load:
+                dpName: ups_upsOutputLoad
+          Battery Temperature:
+            height: 100
+            width: 1000
+            units:  "\xB0C"
+            graphpoints:
+              Status:
+                dpName: ups_upsAdvBatteryTemperature
+          Battery Status:
+            height: 100
+            width: 1000
+            miny: 1
+            maxy: 4
+            units: 1=unknown, 2=normal, 3=low, 4=fault
+            graphpoints:
+              Status:
+                dpName: ups_batteryStatus
           Battery RunTime remaining:
             height: 100
             width: 1000
+            units: minutes
             graphpoints:
               RunTimeRemaining:
-                dpName: battery_batteryRunTimeRemaining
+                dpName: ups_batteryRunTimeRemaining
+          Battery Voltage:
+            height: 100
+            width: 1000
+            units: Volts
+            graphpoints:
+              Nominal voltage:
+                dpName: ups_upsAdvBatteryNominalVoltage
+              Actual voltage:
+                dpName: ups_upsAdvBatteryActualVoltage
+          Battery Current:
+            height: 100
+            width: 1000
+            units: Amps
+            graphpoints:
+              Current:
+                dpName: ups_upsAdvBatteryCurrent
 
+      PowerNetInput:
+        targetPythonClass: ZenPacks.community.PowerNet.PowerNetInput
+        datasources:
+          input:
+            type: Python
+            plugin_classname: ZenPacks.community.PowerNet.dsplugins.PowerNetInput.PowerNetInput
+            datapoints:
+              frequency:
+                rrdtype: GAUGE
 
+      PowerNetInputPhase:
+        targetPythonClass: ZenPacks.community.PowerNet.PowerNetInputPhase
+        datasources:
+          input:
+            type: Python
+            plugin_classname: ZenPacks.community.PowerNet.dsplugins.PowerNetInput.PowerNetInputPhase
+            datapoints:
+              voltage:
+                rrdtype: GAUGE
+              current:
+                rrdtype: GAUGE
+
+      PowerNetOutput:
+        targetPythonClass: ZenPacks.community.PowerNet.PowerNetOutput
+        datasources:
+          output:
+            type: Python
+            plugin_classname: ZenPacks.community.PowerNet.dsplugins.PowerNetOutput.PowerNetOutput
+            datapoints:
+              frequency:
+                rrdtype: GAUGE
+
+      PowerNetOutputPhase:
+        targetPythonClass: ZenPacks.community.PowerNet.PowerNetOutputPhase
+        datasources:
+          input:
+            type: Python
+            plugin_classname: ZenPacks.community.PowerNet.dsplugins.PowerNetOutput.PowerNetOutputPhase
+            datapoints:
+              voltage:
+                rrdtype: GAUGE
+              current:
+                rrdtype: GAUGE
+              load:
+                rrdtype: GAUGE
+              loadPercent:
+                rrdtype: GAUGE
+              power:
+                rrdtype: GAUGE
 

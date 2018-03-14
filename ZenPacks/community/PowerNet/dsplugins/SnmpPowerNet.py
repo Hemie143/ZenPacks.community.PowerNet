@@ -10,7 +10,12 @@ log = logging.getLogger('zen.PythonPowerNet')
 
 upsBasicBatteryStatus                = '.1.3.6.1.4.1.318.1.1.1.2.1.1.0'
 upsAdvBatteryCapacity                = '.1.3.6.1.4.1.318.1.1.1.2.2.1.0'
+upsAdvBatteryTemperature             = '.1.3.6.1.4.1.318.1.1.1.2.2.2.0'
 upsAdvBatteryRunTimeRemaining        = '.1.3.6.1.4.1.318.1.1.1.2.2.3.0'
+upsAdvBatteryNominalVoltage          = '.1.3.6.1.4.1.318.1.1.1.2.2.7.0'
+upsAdvBatteryActualVoltage           = '.1.3.6.1.4.1.318.1.1.1.2.2.8.0'
+upsAdvBatteryCurrent                 = '.1.3.6.1.4.1.318.1.1.1.2.2.9.0'
+upsAdvOutputLoad                     = '.1.3.6.1.4.1.318.1.1.1.4.2.3.0'
 
 
 def getSnmpV3Args(ds0):
@@ -213,8 +218,13 @@ class SnmpPowerNetDev(SnmpPowerNet):
 
         d = yield getScalarStuff(self._snmp_proxy, [upsBasicBatteryStatus,
                                                     upsAdvBatteryCapacity,
+                                                    upsAdvBatteryTemperature,
                                                     upsAdvBatteryRunTimeRemaining,
-                                                        ])
+                                                    upsAdvBatteryNominalVoltage,
+                                                    upsAdvBatteryActualVoltage,
+                                                    upsAdvBatteryCurrent,
+                                                    upsAdvOutputLoad,
+        ])
         log.debug('SnmpPowerNetDev data:{}'.format(d))
         returnValue(d)
 
@@ -224,13 +234,17 @@ class SnmpPowerNetDev(SnmpPowerNet):
         """
 
         log.debug('In success - result is %s and config is %s ' % (result, config))
-
         data = self.new_data()
         for ds in config.datasources:
             try:
                 data['values'][None]['batteryStatus'] = float(result[upsBasicBatteryStatus])
                 data['values'][None]['batteryCapacity'] = float(result[upsAdvBatteryCapacity])
-                data['values'][None]['batteryRunTimeRemaining'] = float(result[upsAdvBatteryRunTimeRemaining]/100/60)
+                data['values'][None]['upsAdvBatteryTemperature'] = float(result[upsAdvBatteryTemperature])
+                data['values'][None]['batteryRunTimeRemaining'] = float(result[upsAdvBatteryRunTimeRemaining])/100/60
+                data['values'][None]['upsAdvBatteryNominalVoltage'] = float(result[upsAdvBatteryNominalVoltage])
+                data['values'][None]['upsAdvBatteryActualVoltage'] = float(result[upsAdvBatteryActualVoltage])
+                data['values'][None]['upsAdvBatteryCurrent'] = float(result[upsAdvBatteryCurrent])
+                data['values'][None]['upsOutputLoad'] = float(result[upsAdvOutputLoad])
             except:
                 log.error('SnmpPowerNetDev onSuccess - {}: Error while storing value'.format(ds))
         log.debug('onSuccess - data: {}'.format(data))
