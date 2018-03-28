@@ -70,7 +70,128 @@ def getTableStuff(snmp_proxy, OIDstrings):
     return d
 
 
-class PowerNetInput(PythonDataSourcePlugin):
+class PowerNetDevice(PythonDataSourcePlugin):
+    # List of device attributes you might need to do collection.
+    proxy_attributes = (
+        'zSnmpVer',
+        'zSnmpCommunity',
+        'zSnmpPort',
+        'zSnmpMonitorIgnore',
+        'zSnmpAuthPassword',
+        'zSnmpAuthType',
+        'zSnmpPrivPassword',
+        'zSnmpPrivType',
+        'zSnmpSecurityName',
+        'zSnmpTimeout',
+        'zSnmpTries',
+        'zMaxOIDPerRequest',
+    )
+
+    @classmethod
+    def config_key(cls, datasource, context):
+        """
+        Return a tuple defining collection uniqueness.
+
+        This is a classmethod that is executed in zenhub. The datasource and
+        context parameters are the full objects.
+
+        This example implementation is the default. Split configurations by
+        device, cycle time, template id, datasource id and the Python data
+        source's plugin class name.
+
+        You can omit this method from your implementation entirely if this
+        default uniqueness behavior fits your needs. In many cases it will.
+        """
+        # Logging in this method will be to zenhub.log
+
+        log.debug('In config_key context.device().id is %s datasource.getCycleTime(context) is %s \
+            datasource.rrdTemplate().id is %s datasource.id is %s datasource.plugin_classname is %s'
+                  % (context.device().id, datasource.getCycleTime(context), datasource.rrdTemplate().id,
+                     datasource.id, datasource.plugin_classname))
+        return (
+            context.device().id,
+            datasource.getCycleTime(context),
+            datasource.rrdTemplate().id,
+            datasource.id,
+            datasource.plugin_classname,
+        )
+
+    @classmethod
+    def params(cls, datasource, context):
+        """
+        Return params dictionary needed for this plugin.
+
+        This is a classmethod that is executed in zenhub. The datasource and
+        context parameters are the full objects.
+
+        You have access to the dmd object database here and any attributes
+        and methods for the context (either device or component).
+
+        You can omit this method from your implementation if you don't require
+        any additional information on each of the datasources of the config
+        parameter to the collect method below. If you only need extra
+        information at the device level it is easier to just use
+        proxy_attributes as mentioned above.
+        """
+        log.info('Starting SnmpPowerNet params')
+        params = {}
+        for sensorName in cls.sensorType:
+            for var in cls.sensorVars:
+                param_name = '{}_{}'.format(sensorName, var)
+                params[param_name] = getattr(context, param_name, '')
+
+        params['snmpindex'] = context.snmpindex
+        log.info(' params is %s \n' % params)
+        return params
+
+    @inlineCallbacks
+    def collect(self, config):
+        return NotImplementedError
+
+    def onResult(self, result, config):
+        """
+        Called first for success and error.
+
+        You can omit this method if you want the result of the collect method
+        to be used without further processing.
+        """
+        log.debug('result is %s ' % result)
+
+        return result
+
+    def onSuccess(self, result, config):
+        return result
+
+    def onError(self, result, config):
+        """
+        Called only on error. After onResult, before onComplete.
+
+        You can omit this method if you want the error result of the collect
+        method to be used without further processing. It recommended to
+        implement this method to capture errors.
+        """
+        log.debug('In OnError - result is %s and config is %s ' % (result, config))
+        return {
+            'events': [{
+                'summary': 'Error getting SnmpPowernet device data with zenpython: %s' % result,
+                'eventKey': 'SnmpPowerNet',
+                'severity': 4,
+            }],
+        }
+
+    def onComplete(self, result, config):
+        """
+        Called last for success and error.
+
+        You can omit this method if you want the result of either the
+        onSuccess or onError method to be used without further processing.
+        """
+        log.debug('Starting SnmpPowerNet onComplete')
+        self._snmp_proxy.close()
+        return result
+
+
+class SnmpPowerNetDev(SnmpPowerNet):
 
     sensorType = {
             'activeEnergy': [8, 'active_energy'],

@@ -35,9 +35,9 @@ class PowerNetInputPhase(SnmpPlugin):
 
         for compname, objmaps in iphase_maps.iteritems():
             rm.append(RelationshipMap(
-                relname='powerNetInputPhases',
+                relname='powerNetInputPhaseNeutrals',
                 compname=compname,
-                modname='ZenPacks.community.PowerNet.PowerNetInputPhase',
+                modname='ZenPacks.community.PowerNet.PowerNetInputPhaseNeutral',
                 objmaps=objmaps,
                 ))
 

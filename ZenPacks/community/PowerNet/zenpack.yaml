@@ -3,14 +3,16 @@ name: ZenPacks.community.PowerNet
 class_relationships:
   - PowerNetDevice 1:MC PowerNetInput
   - PowerNetDevice 1:MC PowerNetOutput
-  - PowerNetInput 1:MC PowerNetInputPhase
-  - PowerNetOutput 1:MC PowerNetOutputPhase
+  - PowerNetInput 1:MC PowerNetInputPhaseNeutral
+  - PowerNetInput 1:MC PowerNetInputPhasePhase
+  - PowerNetDevice 1:MC PowerNetOutputPhaseNeutral
+  - PowerNetDevice 1:MC PowerNetOutputPhasePhase
 
 classes:
   PowerNetDevice:
     base: [zenpacklib.Device]
     label: PowerNet UPS Device
-    monitoring_templates: [SnmpPowerNet]
+    monitoring_templates: [PowerNetDevice]
     properties:
       model:
         type: string
@@ -39,10 +41,20 @@ classes:
       inputType:
         label: Input type
 
-  PowerNetInputPhase:
+  PowerNetInputPhaseNeutral:
     base: [zenpacklib.Component]
-    label: Input Phase
-    monitoring_templates: [PowerNetInputPhase]
+    label: Input Phase-to-Neutral
+    monitoring_templates: [PowerNetInputPhaseNeutral]
+    properties:
+      inputIndex:
+        label: Input Index
+      index:
+        label: Index
+
+  PowerNetInputPhasePhase:
+    base: [zenpacklib.Component]
+    label: Input Phase-to-Phase
+    monitoring_templates: [PowerNetInputPhasePhase]
     properties:
       inputIndex:
         label: Input Index
@@ -61,10 +73,20 @@ classes:
       orientation:
         label: Voltage orientation
 
-  PowerNetOutputPhase:
+  PowerNetOutputPhaseNeutral:
     base: [zenpacklib.Component]
-    label: Input Pahse
-    monitoring_templates: [PowerNetOutputPhase]
+    label: Output Phase-to-Neutral
+    monitoring_templates: [PowerNetOutputPhaseNeutral]
+    properties:
+      outputIndex:
+        label: Output Index
+      index:
+        label: Index
+
+  PowerNetOutputPhasePhase:
+    base: [zenpacklib.Component]
+    label: Output Phase-to-Phase
+    monitoring_templates: [PowerNetOutputPhasePhase]
     properties:
       outputIndex:
         label: Output Index
@@ -81,19 +103,17 @@ device_classes:
         - zenoss.snmp.DeviceMap
         - zenoss.snmp.SnmpV3EngineIdMap
         - zenoss.snmp.InterfaceMap
-        - community.snmp.PowerNetDevice
-        - community.snmp.PowerNetInput
-        - community.snmp.PowerNetOutput
+        - community.snmp.PowerNet
       zDeviceTemplates:
         - Device
 
     templates:
-      SnmpPowerNet:
+      PowerNetDevice:
         targetPythonClass: ZenPacks.community.PowerNet.PowerNetDevice
         datasources:
           ups:
             type: Python
-            plugin_classname: ZenPacks.community.PowerNet.dsplugins.SnmpPowerNet.SnmpPowerNetDev
+            plugin_classname: ZenPacks.community.PowerNet.dsplugins.PowerNetDevice.PowerNetDevice
             datapoints:
                 batteryStatus:
                   rrdtype: GAUGE
@@ -173,12 +193,24 @@ device_classes:
               frequency:
                 rrdtype: GAUGE
 
-      PowerNetInputPhase:
-        targetPythonClass: ZenPacks.community.PowerNet.PowerNetInputPhase
+      PowerNetInputPhaseNeutral:
+        targetPythonClass: ZenPacks.community.PowerNet.PowerNetInputPhaseNeutral
         datasources:
           input:
             type: Python
-            plugin_classname: ZenPacks.community.PowerNet.dsplugins.PowerNetInput.PowerNetInputPhase
+            plugin_classname: ZenPacks.community.PowerNet.dsplugins.PowerNetInput.PowerNetInputPhaseNeutral
+            datapoints:
+              voltage:
+                rrdtype: GAUGE
+              current:
+                rrdtype: GAUGE
+
+      PowerNetInputPhasePhase:
+        targetPythonClass: ZenPacks.community.PowerNet.PowerNetInputPhasePhase
+        datasources:
+          input:
+            type: Python
+            plugin_classname: ZenPacks.community.PowerNet.dsplugins.PowerNetInput.PowerNetInputPhasePhase
             datapoints:
               voltage:
                 rrdtype: GAUGE
