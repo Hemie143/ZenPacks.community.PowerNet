@@ -106,6 +106,7 @@ device_classes:
         - community.snmp.PowerNet
       zDeviceTemplates:
         - Device
+        - PowerNetDevice
 
     templates:
       PowerNetDevice:
@@ -190,8 +191,37 @@ device_classes:
             type: Python
             plugin_classname: ZenPacks.community.PowerNet.dsplugins.PowerNetInput.PowerNetInput
             datapoints:
+              current:
+                rrdtype: GAUGE
+              voltage:
+                rrdtype: GAUGE
               frequency:
                 rrdtype: GAUGE
+        graphs:
+          Input Current:
+            height: 100
+            width: 1000
+            miny: 0
+            units: Ampere
+            graphpoints:
+              Current:
+                dpName: input_current
+          Input Voltage:
+            height: 100
+            width: 1000
+            miny: 0
+            units: Volt
+            graphpoints:
+              Current:
+                dpName: input_voltage
+          Input Frequency:
+            height: 100
+            width: 1000
+            miny: 0
+            units: Hz
+            graphpoints:
+              Current:
+                dpName: input_frequency
 
       PowerNetInputPhaseNeutral:
         targetPythonClass: ZenPacks.community.PowerNet.PowerNetInputPhaseNeutral
@@ -215,33 +245,5 @@ device_classes:
               voltage:
                 rrdtype: GAUGE
               current:
-                rrdtype: GAUGE
-
-      PowerNetOutput:
-        targetPythonClass: ZenPacks.community.PowerNet.PowerNetOutput
-        datasources:
-          output:
-            type: Python
-            plugin_classname: ZenPacks.community.PowerNet.dsplugins.PowerNetOutput.PowerNetOutput
-            datapoints:
-              frequency:
-                rrdtype: GAUGE
-
-      PowerNetOutputPhase:
-        targetPythonClass: ZenPacks.community.PowerNet.PowerNetOutputPhase
-        datasources:
-          input:
-            type: Python
-            plugin_classname: ZenPacks.community.PowerNet.dsplugins.PowerNetOutput.PowerNetOutputPhase
-            datapoints:
-              voltage:
-                rrdtype: GAUGE
-              current:
-                rrdtype: GAUGE
-              load:
-                rrdtype: GAUGE
-              loadPercent:
-                rrdtype: GAUGE
-              power:
                 rrdtype: GAUGE
 

@@ -87,6 +87,14 @@ class PowerNetDevice(PythonDataSourcePlugin):
         'zMaxOIDPerRequest',
     )
 
+    battery_status_maps = {
+        1: ['unknown', 3],
+        2: ['batteryNormal', 0],
+        3: ['batteryLow', 4],
+        4: ['batteryInFaultCondition', 5],
+    }
+
+
     @classmethod
     def config_key(cls, datasource, context):
         """
@@ -133,7 +141,7 @@ class PowerNetDevice(PythonDataSourcePlugin):
         information at the device level it is easier to just use
         proxy_attributes as mentioned above.
         """
-        log.info('Starting SnmpPowerNet params')
+        log.info('Starting PowerNetDevice params')
         params = {}
         for sensorName in cls.sensorType:
             for var in cls.sensorVars:
@@ -146,7 +154,26 @@ class PowerNetDevice(PythonDataSourcePlugin):
 
     @inlineCallbacks
     def collect(self, config):
-        return NotImplementedError
+        log.debug('Starting PowerNetDevice collect')
+        log.debug('config:{}'.format(config))
+        ds0 = config.datasources[0]
+        # Open the Snmp AgentProxy connection
+        self._snmp_proxy = get_snmp_proxy(ds0, config)
+
+        # NB NB NB - When getting scalars, they must all come from the SAME snmp table
+
+        # Now get data - 1 scalar OIDs
+        d = yield getScalarStuff(self._snmp_proxy, [upsBasicBatteryStatus,
+                                                    upsAdvBatteryCapacity,
+                                                    upsAdvBatteryTemperature,
+                                                    upsAdvBatteryRunTimeRemaining,
+                                                    upsAdvBatteryNominalVoltage,
+                                                    upsAdvBatteryActualVoltage,
+                                                    upsAdvBatteryCurrent,
+                                                    upsAdvOutputLoad,
+                                                    ])
+        log.debug('PowerNetDevice data:{}'.format(d))
+        returnValue(d)
 
     def onResult(self, result, config):
         """
@@ -156,11 +183,35 @@ class PowerNetDevice(PythonDataSourcePlugin):
         to be used without further processing.
         """
         log.debug('result is %s ' % result)
-
         return result
 
     def onSuccess(self, result, config):
-        return result
+        log.debug('In success - result is %s and config is %s ' % (result, config))
+        data = self.new_data()
+
+        # TODO: Translate
+        battery_status_props = self.battery_status_maps[result[upsBasicBatteryStatus]]
+        data['values'][None]['batteryStatus'] = battery_status_props[1]
+        data['events'].append({
+            'device': config.id,
+            'component': None,
+            'severity': battery_status_props[1],
+            'eventKey': 'batteryStatus',
+            'eventClassKey': 'batteryStatus',
+            'summary': 'Battery Status is {}'.format(battery_status_props[0]),
+            'message': 'Battery Status is {}'.format(battery_status_props[0]),
+            'eventClass': '/Status',
+        })
+        data['values'][None]['batteryCapacity'] = result[upsAdvBatteryCapacity]
+        # TODO: Convert to minutes
+        data['values'][None]['batteryRunTimeRemaining'] = result[upsAdvBatteryRunTimeRemaining] / 6000
+        data['values'][None]['upsOutputLoad'] = result[upsAdvOutputLoad]
+        data['values'][None]['upsAdvBatteryNominalVoltage'] = result[upsAdvBatteryNominalVoltage]
+        data['values'][None]['upsAdvBatteryActualVoltage'] = result[upsAdvBatteryActualVoltage]
+        data['values'][None]['upsAdvBatteryCurrent'] = result[upsAdvBatteryCurrent]
+        data['values'][None]['upsAdvBatteryTemperature'] = result[upsAdvBatteryTemperature]
+        log.debug('In success - data is %s' % data)
+        return data
 
     def onError(self, result, config):
         """
@@ -173,8 +224,8 @@ class PowerNetDevice(PythonDataSourcePlugin):
         log.debug('In OnError - result is %s and config is %s ' % (result, config))
         return {
             'events': [{
-                'summary': 'Error getting SnmpPowernet device data with zenpython: %s' % result,
-                'eventKey': 'SnmpPowerNet',
+                'summary': 'Error getting PowerNetDevice device data with zenpython: %s' % result,
+                'eventKey': 'PowerNetDevice',
                 'severity': 4,
             }],
         }
@@ -186,67 +237,8 @@ class PowerNetDevice(PythonDataSourcePlugin):
         You can omit this method if you want the result of either the
         onSuccess or onError method to be used without further processing.
         """
-        log.debug('Starting SnmpPowerNet onComplete')
+        log.debug('Starting PowerNetDevice onComplete')
         self._snmp_proxy.close()
         return result
 
-
-class SnmpPowerNetDev(SnmpPowerNet):
-
-    sensorType = {
-            'activeEnergy': [8, 'active_energy'],
-            'activePower': [5, 'active_power'],
-            'apparentPower': [6, 'apparent_power'],
-            'frequency': [23, 'frequency'],
-            'powerFactor': [7, 'power_factor'],
-            'rmsCurrent': [1, 'rms_current'],
-            'rmsVoltage': [4, 'rms_voltage'],
-            'unbalancedCurrent': [3, 'unbalanced_current'],
-            }
-
-    @inlineCallbacks
-    def collect(self, config):
-        """
-        This method really is run by zenpython daemon. Check zenpython.log
-        for any log messages.
-        """
-
-        log.debug('Starting SnmpPowerNetDev collect')
-        ds0 = config.datasources[0]
-        # Open the Snmp AgentProxy connection
-        self._snmp_proxy = get_snmp_proxy(ds0, config)
-
-        d = yield getScalarStuff(self._snmp_proxy, [upsBasicBatteryStatus,
-                                                    upsAdvBatteryCapacity,
-                                                    upsAdvBatteryTemperature,
-                                                    upsAdvBatteryRunTimeRemaining,
-                                                    upsAdvBatteryNominalVoltage,
-                                                    upsAdvBatteryActualVoltage,
-                                                    upsAdvBatteryCurrent,
-                                                    upsAdvOutputLoad,
-        ])
-        log.debug('SnmpPowerNetDev data:{}'.format(d))
-        returnValue(d)
-
-    def onSuccess(self, result, config):
-        """
-        Called only on success. After onResult, before onComplete.
-        """
-
-        log.debug('In success - result is %s and config is %s ' % (result, config))
-        data = self.new_data()
-        for ds in config.datasources:
-            try:
-                data['values'][None]['batteryStatus'] = float(result[upsBasicBatteryStatus])
-                data['values'][None]['batteryCapacity'] = float(result[upsAdvBatteryCapacity])
-                data['values'][None]['upsAdvBatteryTemperature'] = float(result[upsAdvBatteryTemperature])
-                data['values'][None]['batteryRunTimeRemaining'] = float(result[upsAdvBatteryRunTimeRemaining])/100/60
-                data['values'][None]['upsAdvBatteryNominalVoltage'] = float(result[upsAdvBatteryNominalVoltage])
-                data['values'][None]['upsAdvBatteryActualVoltage'] = float(result[upsAdvBatteryActualVoltage])
-                data['values'][None]['upsAdvBatteryCurrent'] = float(result[upsAdvBatteryCurrent])
-                data['values'][None]['upsOutputLoad'] = float(result[upsAdvOutputLoad])
-            except:
-                log.error('SnmpPowerNetDev onSuccess - {}: Error while storing value'.format(ds))
-        log.debug('onSuccess - data: {}'.format(data))
-        return data
 
