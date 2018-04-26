@@ -135,7 +135,6 @@ class PowerNetInput(PowerNetInputBase):
         log.debug('onSuccess - data: {}'.format(data))
         return data
 
-
 class PowerNetInputPhaseBase(PowerNetInputBase):
 
     @inlineCallbacks

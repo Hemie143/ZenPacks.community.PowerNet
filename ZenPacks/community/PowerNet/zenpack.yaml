@@ -271,3 +271,97 @@ device_classes:
                 dpName: inputpp_current
                 lineType: AREA
 
+      PowerNetOutputPhaseNeutral:
+        targetPythonClass: ZenPacks.community.PowerNet.PowerNetOutputPhaseNeutral
+        datasources:
+          outputpn:
+            type: Python
+            plugin_classname: ZenPacks.community.PowerNet.dsplugins.PowerNetOutput.PowerNetOutputPhaseNeutral
+            datapoints:
+              voltage:
+                rrdtype: GAUGE
+              current:
+                rrdtype: GAUGE
+              load:
+                rrdtype: GAUGE
+              loadperc:
+                rrdtype: GAUGE
+              power:
+                rrdtype: GAUGE
+        graphs:
+          Output Voltage:
+            height: 100
+            width: 1000
+            miny: 0
+            units: Volt
+            graphpoints:
+              Voltage:
+                dpName: outputpn_voltage
+                lineType: AREA
+          Output Current:
+            height: 100
+            width: 1000
+            miny: 0
+            units: Ampere
+            graphpoints:
+              Voltage:
+                dpName: outputpn_current
+                lineType: AREA
+          Output Load:
+            height: 100
+            width: 1000
+            miny: 0
+            graphpoints:
+              Load:
+                dpName: outputpn_load
+                lineType: AREA
+          Output Load Percentage:
+            height: 100
+            width: 1000
+            miny: 0
+            units: percent
+            graphpoints:
+              Load:
+                dpName: outputpn_loadperc
+                lineType: AREA
+          Output Power:
+            height: 100
+            width: 1000
+            miny: 0
+            graphpoints:
+              Load:
+                dpName: outputpn_power
+                lineType: AREA
+
+
+      PowerNetOutputPhasePhase:
+        targetPythonClass: ZenPacks.community.PowerNet.PowerNetOutputPhasePhase
+        datasources:
+          outputpp:
+            type: Python
+            plugin_classname: ZenPacks.community.PowerNet.dsplugins.PowerNetOutput.PowerNetOutputPhasePhase
+            datapoints:
+              voltage:
+                rrdtype: GAUGE
+              current:
+                rrdtype: GAUGE
+        graphs:
+          Output Voltage:
+            height: 100
+            width: 1000
+            miny: 0
+            units: Volt
+            graphpoints:
+              Voltage:
+                dpName: outputpp_voltage
+                lineType: AREA
+          Output Current:
+            height: 100
+            width: 1000
+            miny: 0
+            units: Ampere
+            graphpoints:
+              Voltage:
+                dpName: outputpp_current
+                lineType: AREA
+
