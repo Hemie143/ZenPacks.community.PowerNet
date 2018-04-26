@@ -17,6 +17,7 @@ upsAdvBatteryActualVoltage           = '.1.3.6.1.4.1.318.1.1.1.2.2.8.0'
 upsAdvBatteryCurrent                 = '.1.3.6.1.4.1.318.1.1.1.2.2.9.0'
 upsAdvOutputLoad                     = '.1.3.6.1.4.1.318.1.1.1.4.2.3.0'
 
+# TODO: Move tool function to separate module
 
 def getSnmpV3Args(ds0):
     snmpv3Args = []

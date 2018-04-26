@@ -142,8 +142,10 @@ device_classes:
             graphpoints:
               Battery Capacity:
                 dpName: ups_batteryCapacity
+                lineType: AREA
               Output Load:
                 dpName: ups_upsOutputLoad
+                lineType: AREA
           Battery Temperature:
             height: 100
             width: 1000
@@ -151,22 +153,15 @@ device_classes:
             graphpoints:
               Status:
                 dpName: ups_upsAdvBatteryTemperature
-          Battery Status:
-            height: 100
-            width: 1000
-            miny: 1
-            maxy: 4
-            units: 1=unknown, 2=normal, 3=low, 4=fault
-            graphpoints:
-              Status:
-                dpName: ups_batteryStatus
           Battery RunTime remaining:
             height: 100
             width: 1000
             units: minutes
+            miny: 0
             graphpoints:
               RunTimeRemaining:
                 dpName: ups_batteryRunTimeRemaining
+                lineType: AREA
           Battery Voltage:
             height: 100
             width: 1000
@@ -226,7 +221,7 @@ device_classes:
       PowerNetInputPhaseNeutral:
         targetPythonClass: ZenPacks.community.PowerNet.PowerNetInputPhaseNeutral
         datasources:
-          input:
+          inputpn:
             type: Python
             plugin_classname: ZenPacks.community.PowerNet.dsplugins.PowerNetInput.PowerNetInputPhaseNeutral
             datapoints:
@@ -234,11 +229,21 @@ device_classes:
                 rrdtype: GAUGE
               current:
                 rrdtype: GAUGE
+        graphs:
+          Input Voltage:
+            height: 100
+            width: 1000
+            miny: 0
+            units: Volt
+            graphpoints:
+              Voltage:
+                dpName: inputpn_voltage
+                lineType: AREA
 
       PowerNetInputPhasePhase:
         targetPythonClass: ZenPacks.community.PowerNet.PowerNetInputPhasePhase
         datasources:
-          input:
+          inputpp:
             type: Python
             plugin_classname: ZenPacks.community.PowerNet.dsplugins.PowerNetInput.PowerNetInputPhasePhase
             datapoints:
@@ -246,4 +251,23 @@ device_classes:
                 rrdtype: GAUGE
               current:
                 rrdtype: GAUGE
+        graphs:
+          Input Voltage:
+            height: 100
+            width: 1000
+            miny: 0
+            units: Volt
+            graphpoints:
+              Voltage:
+                dpName: inputpp_voltage
+                lineType: AREA
+          Input Current:
+            height: 100
+            width: 1000
+            miny: 0
+            units: Ampere
+            graphpoints:
+              Voltage:
+                dpName: inputpp_current
+                lineType: AREA
 
