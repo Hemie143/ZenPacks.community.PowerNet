@@ -142,9 +142,9 @@ class PowerNetOutputPhaseNeutral(PowerNetOutputBase):
             load = result[upsPhaseOutputLoad][upsPhaseOutputLoad + '.' + snmpindex]
             data['values'][ds.component]['load'] = float(load)
             loadperc = result[upsPhaseOutputPercentLoad][upsPhaseOutputPercentLoad + '.' + snmpindex]
-            data['values'][ds.component]['current'] = float(loadperc)
+            data['values'][ds.component]['loadperc'] = float(loadperc)
             power = result[upsPhaseOutputPower][upsPhaseOutputPower + '.' + snmpindex]
-            data['values'][ds.component]['current'] = float(power)
+            data['values'][ds.component]['power'] = float(power)
 
         log.debug('onSuccess - data: {}'.format(data))
         return data
@@ -168,9 +168,8 @@ class PowerNetOutputPhasePhase(PowerNetOutputBase):
             voltage = result[upsPhaseOutputVoltage][upsPhaseOutputVoltage + '.' + snmpindex]
             log.debug('PowerNetOutputPhasePhase voltage: {}'.format(voltage))
             data['values'][ds.component]['voltage'] = float(voltage)
-            # current = result[upsPhaseInputCurrent][upsPhaseInputCurrent + '.' + snmpindex]
-            # log.debug('PowerNetInputPhasePhase current: {}'.format(current))
-
+            current = result[upsPhaseOutputCurrent][upsPhaseOutputCurrent + '.' + snmpindex]
+            data['values'][ds.component]['current'] = float(current)
 
         log.debug('onSuccess - data: {}'.format(data))
         return data

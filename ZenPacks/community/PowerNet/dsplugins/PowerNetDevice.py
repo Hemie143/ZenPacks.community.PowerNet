@@ -16,6 +16,10 @@ upsAdvBatteryNominalVoltage          = '.1.3.6.1.4.1.318.1.1.1.2.2.7.0'
 upsAdvBatteryActualVoltage           = '.1.3.6.1.4.1.318.1.1.1.2.2.8.0'
 upsAdvBatteryCurrent                 = '.1.3.6.1.4.1.318.1.1.1.2.2.9.0'
 upsAdvOutputLoad                     = '.1.3.6.1.4.1.318.1.1.1.4.2.3.0'
+upsAdvOutputNominalFrequency         = '.1.3.6.1.4.1.318.1.1.1.4.2.7.0'
+upsAdvOutputActivePower              = '.1.3.6.1.4.1.318.1.1.1.4.2.8.0'
+upsAdvOutputApparentPower            = '.1.3.6.1.4.1.318.1.1.1.4.2.9.0'
+upsPhaseOutputFrequency              = '.1.3.6.1.4.1.318.1.1.1.9.3.2.1.4.1'
 
 # TODO: Move tool function to separate module
 
@@ -172,6 +176,10 @@ class PowerNetDevice(PythonDataSourcePlugin):
                                                     upsAdvBatteryActualVoltage,
                                                     upsAdvBatteryCurrent,
                                                     upsAdvOutputLoad,
+                                                    upsAdvOutputNominalFrequency,
+                                                    upsAdvOutputActivePower,
+                                                    upsAdvOutputApparentPower,
+                                                    upsPhaseOutputFrequency,
                                                     ])
         log.debug('PowerNetDevice data:{}'.format(d))
         returnValue(d)
@@ -211,6 +219,10 @@ class PowerNetDevice(PythonDataSourcePlugin):
         data['values'][None]['upsAdvBatteryActualVoltage'] = result[upsAdvBatteryActualVoltage]
         data['values'][None]['upsAdvBatteryCurrent'] = result[upsAdvBatteryCurrent]
         data['values'][None]['upsAdvBatteryTemperature'] = result[upsAdvBatteryTemperature]
+        data['values'][None]['upsAdvOutputNominalFrequency'] = result[upsAdvOutputNominalFrequency]
+        data['values'][None]['upsPhaseOutputFrequency'] = result[upsPhaseOutputFrequency] / 10
+        data['values'][None]['upsAdvOutputActivePower'] = result[upsAdvOutputActivePower]
+        data['values'][None]['upsAdvOutputApparentPower'] = result[upsAdvOutputApparentPower]
         log.debug('In success - data is %s' % data)
         return data
 

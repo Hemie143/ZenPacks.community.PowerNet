@@ -13,7 +13,10 @@ upsPhaseInputFrequency = '.1.3.6.1.4.1.318.1.1.1.9.2.2.1.4'
 
 upsPhaseInputVoltage = '.1.3.6.1.4.1.318.1.1.1.9.2.3.1.3'
 upsPhaseInputCurrent = '.1.3.6.1.4.1.318.1.1.1.9.2.3.1.6'
-
+upsAdvInputNominalFrequency = '.1.3.6.1.4.1.318.1.1.1.3.2.6.0'
+upsAdvInputNominalVoltage = '.1.3.6.1.4.1.318.1.1.1.3.2.7.0'
+upsAdvInputBypassNominalFrequency = '.1.3.6.1.4.1.318.1.1.1.3.2.8.0'
+upsAdvInputBypassNominalVoltage = '.1.3.6.1.4.1.318.1.1.1.3.2.9.0'
 
 def getSnmpV3Args(ds0):
     snmpv3Args = []
@@ -90,6 +93,7 @@ class PowerNetInputBase(PythonDataSourcePlugin):
         log.debug('Starting PowerNetInput params')
         params = {}
         params['snmpindex'] = context.snmpindex
+        params['inputType'] = context.inputType
         log.debug(' params is %s \n' % (params))
         return params
 
@@ -113,6 +117,10 @@ class PowerNetInput(PowerNetInputBase):
         self._snmp_proxy = get_snmp_proxy(ds0, config)
 
         d = yield getTableStuff(self._snmp_proxy, [upsPhaseInputFrequency,
+                                                   upsAdvInputNominalVoltage,
+                                                   upsAdvInputNominalFrequency,
+                                                   upsAdvInputBypassNominalVoltage,
+                                                   upsAdvInputBypassNominalFrequency,
                                                    ])
         log.debug('PowerNetInput data:{}'.format(d))
         returnValue(d)
@@ -131,6 +139,21 @@ class PowerNetInput(PowerNetInputBase):
             log.debug('snmpindex: {}'.format(snmpindex))
             frequency = result[upsPhaseInputFrequency][upsPhaseInputFrequency + '.' + snmpindex]
             data['values'][ds.component]['frequency'] = float(frequency) / 10.0
+            # check input type
+            inputType = ds.params.get('inputType')
+            log.debug('inputType: {}'.format(inputType))
+            if inputType == 'Main':
+                nominal_voltage = result[upsAdvInputNominalVoltage][upsAdvInputNominalVoltage]
+                data['values'][ds.component]['nominal_voltage'] = float(nominal_voltage)
+                nominal_frequency = result[upsAdvInputNominalFrequency][upsAdvInputNominalFrequency]
+                data['values'][ds.component]['nominal_frequency'] = float(nominal_frequency)
+            elif inputType == 'Bypass':
+                nominal_voltage = result[upsAdvInputBypassNominalVoltage][upsAdvInputBypassNominalVoltage]
+                data['values'][ds.component]['nominal_voltage'] = float(nominal_voltage)
+                nominal_frequency =result[upsAdvInputBypassNominalFrequency][upsAdvInputBypassNominalFrequency]
+                data['values'][ds.component]['nominal_frequency'] = float(nominal_frequency)
+            else:
+                log.error('PowerNetInput onSuccess - inputType not recognized: {}-{}'.format(ds.component, inputType))
 
         log.debug('onSuccess - data: {}'.format(data))
         return data
