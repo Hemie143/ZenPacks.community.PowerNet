@@ -169,6 +169,7 @@ class PowerNetOutputPhasePhase(PowerNetOutputBase):
             log.debug('PowerNetOutputPhasePhase voltage: {}'.format(voltage))
             data['values'][ds.component]['voltage'] = float(voltage)
             current = result[upsPhaseOutputCurrent][upsPhaseOutputCurrent + '.' + snmpindex]
+            log.debug('PowerNetOutputPhasePhase current: {}'.format(current))
             data['values'][ds.component]['current'] = float(current)
 
         log.debug('onSuccess - data: {}'.format(data))

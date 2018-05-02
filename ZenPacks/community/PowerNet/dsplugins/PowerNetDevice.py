@@ -212,7 +212,6 @@ class PowerNetDevice(PythonDataSourcePlugin):
             'eventClass': '/Status',
         })
         data['values'][None]['batteryCapacity'] = result[upsAdvBatteryCapacity]
-        # TODO: Convert to minutes
         data['values'][None]['batteryRunTimeRemaining'] = result[upsAdvBatteryRunTimeRemaining] / 6000
         data['values'][None]['upsOutputLoad'] = result[upsAdvOutputLoad]
         data['values'][None]['upsAdvBatteryNominalVoltage'] = result[upsAdvBatteryNominalVoltage]
