@@ -65,7 +65,6 @@ def getTableStuff(snmp_proxy, OIDstrings):
     d = snmp_proxy.getTable(OIDstrings)
     return d
 
-# TODO : Move all in one superclass and subclasses
 
 class PowerNetOutputBase(PythonDataSourcePlugin):
 
@@ -136,7 +135,7 @@ class PowerNetOutputPhaseNeutral(PowerNetOutputBase):
             voltage = result[upsPhaseOutputVoltage][upsPhaseOutputVoltage + '.' + snmpindex]
             log.debug('PowerNetOutputPhaseNeutral voltage: {}'.format(voltage))
             data['values'][ds.component]['voltage'] = float(voltage)
-            current = result[upsPhaseOutputCurrent][upsPhaseOutputCurrent + '.' + snmpindex]
+            current = result[upsPhaseOutputCurrent][upsPhaseOutputCurrent + '.' + snmpindex] / 10.0
             log.debug('PowerNetOutputPhaseNeutral current: {}'.format(current))
             data['values'][ds.component]['current'] = float(current)
             load = result[upsPhaseOutputLoad][upsPhaseOutputLoad + '.' + snmpindex]
@@ -168,9 +167,9 @@ class PowerNetOutputPhasePhase(PowerNetOutputBase):
             voltage = result[upsPhaseOutputVoltage][upsPhaseOutputVoltage + '.' + snmpindex]
             log.debug('PowerNetOutputPhasePhase voltage: {}'.format(voltage))
             data['values'][ds.component]['voltage'] = float(voltage)
-            current = result[upsPhaseOutputCurrent][upsPhaseOutputCurrent + '.' + snmpindex]
-            log.debug('PowerNetOutputPhasePhase current: {}'.format(current))
-            data['values'][ds.component]['current'] = float(current)
+            # current = result[upsPhaseOutputCurrent][upsPhaseOutputCurrent + '.' + snmpindex]
+            # log.debug('PowerNetOutputPhasePhase current: {}'.format(current))
+            # data['values'][ds.component]['current'] = float(current)
 
         log.debug('onSuccess - data: {}'.format(data))
         return data

@@ -219,7 +219,7 @@ device_classes:
               frequency:
                 rrdtype: GAUGE
         graphs:
-          Input Voltage:
+          Input Nominal Voltage:
             height: 100
             width: 1000
             miny: 0
@@ -290,15 +290,6 @@ device_classes:
               Voltage:
                 dpName: inputpp_voltage
                 lineType: AREA
-          Input Current:
-            height: 100
-            width: 1000
-            miny: 0
-            units: Ampere
-            graphpoints:
-              Current:
-                dpName: inputpp_current
-                lineType: AREA
 
       PowerNetOutputPhaseNeutral:
         targetPythonClass: ZenPacks.community.PowerNet.PowerNetOutputPhaseNeutral
@@ -336,15 +327,6 @@ device_classes:
               Current:
                 dpName: outputpn_current
                 lineType: AREA
-          Output Load:
-            height: 100
-            width: 1000
-            miny: 0
-            units: VA
-            graphpoints:
-              Load:
-                dpName: outputpn_load
-                lineType: AREA
           Output Load Percentage:
             height: 100
             width: 1000
@@ -360,8 +342,11 @@ device_classes:
             miny: 0
             units: Watts
             graphpoints:
-              Power:
+              Active Power:
                 dpName: outputpn_power
+                lineType: AREA
+              Apparent Power:
+                dpName: outputpn_load
                 lineType: AREA
 
 
@@ -385,14 +370,5 @@ device_classes:
             graphpoints:
               Voltage:
                 dpName: outputpp_voltage
-                lineType: AREA
-          Output Current:
-            height: 100
-            width: 1000
-            miny: 0
-            units: Ampere
-            graphpoints:
-              Current:
-                dpName: outputpp_current
                 lineType: AREA
 

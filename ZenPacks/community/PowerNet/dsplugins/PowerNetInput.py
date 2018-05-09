@@ -196,7 +196,7 @@ class PowerNetInputPhaseNeutral(PowerNetInputPhaseBase):
             voltage = result[upsPhaseInputVoltage][upsPhaseInputVoltage + '.' + snmpindex]
             log.debug('PowerNetInputPhaseNeutral voltage: {}'.format(voltage))
             data['values'][ds.component]['voltage'] = float(voltage)
-            current = result[upsPhaseInputCurrent][upsPhaseInputCurrent + '.' + snmpindex]
+            current = result[upsPhaseInputCurrent][upsPhaseInputCurrent + '.' + snmpindex] / 10.0
             log.debug('PowerNetInputPhaseNeutral current: {}'.format(current))
             data['values'][ds.component]['current'] = float(current)
 
