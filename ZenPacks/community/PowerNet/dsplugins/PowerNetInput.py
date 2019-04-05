@@ -98,6 +98,17 @@ class PowerNetInputBase(PythonDataSourcePlugin):
 
     # TODO: check need for config_key
 
+    def onComplete(self, result, config):
+        """
+        Called last for success and error.
+
+        You can omit this method if you want the result of either the
+        onSuccess or onError method to be used without further processing.
+        """
+        log.debug('Starting PowerNetInput onComplete')
+        self._snmp_proxy.close()
+        return result
+
 
 class PowerNetInput(PowerNetInputBase):
 

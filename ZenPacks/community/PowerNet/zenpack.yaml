@@ -141,9 +141,51 @@ device_classes:
                 upsAdvOutputApparentPower:
                   rrdtype: GAUGE
         graphs:
+          Battery Current:
+            units: Ampere
+            graphpoints:
+              Current:
+                dpName: ups_upsAdvBatteryCurrent
+          Battery RunTime remaining:
+            units: minutes
+            miny: 0
+            graphpoints:
+              RunTimeRemaining:
+                dpName: ups_batteryRunTimeRemaining
+                lineType: AREA
+          Battery Temperature:
+            units:  "\xB0C"
+            graphpoints:
+              Temperature:
+                dpName: ups_upsAdvBatteryTemperature
+          Battery Voltage:
+            units: Volt
+            graphpoints:
+              Nominal voltage:
+                dpName: ups_upsAdvBatteryNominalVoltage
+                sequence: 1
+              Actual voltage:
+                dpName: ups_upsAdvBatteryActualVoltage
+                sequence: 2
+          Output Frequency:
+            units: Hz
+            graphpoints:
+              Output Frequency:
+                dpName: ups_upsPhaseOutputFrequency
+                sequence: 1
+              Output Nominal Frequency:
+                dpName: ups_upsAdvOutputNominalFrequency
+                sequence: 2
+          Output Power:
+            units: Watt
+            graphpoints:
+              Active Power:
+                dpName: ups_upsAdvOutputActivePower
+                sequence: 1
+              Apparent Power:
+                dpName: ups_upsAdvOutputApparentPower
+                sequence: 2
           UPS Capacity:
-            height: 100
-            width: 1000
             miny: 0
             maxy: 100
             units: percent
@@ -151,59 +193,11 @@ device_classes:
               Battery Remaining Capacity:
                 dpName: ups_batteryCapacity
                 lineType: AREA
+                sequence: 1
               Output Load:
                 dpName: ups_upsOutputLoad
                 lineType: AREA
-          Battery Temperature:
-            height: 100
-            width: 1000
-            units:  "\xB0C"
-            graphpoints:
-              Temperature:
-                dpName: ups_upsAdvBatteryTemperature
-          Battery RunTime remaining:
-            height: 100
-            width: 1000
-            units: minutes
-            miny: 0
-            graphpoints:
-              RunTimeRemaining:
-                dpName: ups_batteryRunTimeRemaining
-                lineType: AREA
-          Battery Voltage:
-            height: 100
-            width: 1000
-            units: Volt
-            graphpoints:
-              Nominal voltage:
-                dpName: ups_upsAdvBatteryNominalVoltage
-              Actual voltage:
-                dpName: ups_upsAdvBatteryActualVoltage
-          Battery Current:
-            height: 100
-            width: 1000
-            units: Ampere
-            graphpoints:
-              Current:
-                dpName: ups_upsAdvBatteryCurrent
-          Output Frequency:
-            height: 100
-            width: 1000
-            units: Hz
-            graphpoints:
-              Output Frequency:
-                dpName: ups_upsPhaseOutputFrequency
-              Output Nominal Frequency:
-                dpName: ups_upsAdvOutputNominalFrequency
-          Output Power:
-            height: 100
-            width: 1000
-            units: Watt
-            graphpoints:
-              Active Power:
-                dpName: ups_upsAdvOutputActivePower
-              Apparent Power:
-                dpName: ups_upsAdvOutputApparentPower
+                sequence: 2
 
       PowerNetInput:
         targetPythonClass: ZenPacks.community.PowerNet.PowerNetInput
@@ -220,16 +214,12 @@ device_classes:
                 rrdtype: GAUGE
         graphs:
           Input Nominal Voltage:
-            height: 100
-            width: 1000
             miny: 0
             units: Volt
             graphpoints:
               Voltage:
                 dpName: input_nominal_voltage
           Input Frequency:
-            height: 100
-            width: 1000
             miny: 0
             units: Hz
             graphpoints:
@@ -251,23 +241,21 @@ device_classes:
                 rrdtype: GAUGE
         graphs:
           Input Voltage:
-            height: 100
-            width: 1000
             miny: 0
             units: Volt
             graphpoints:
               Voltage:
                 dpName: inputpn_voltage
                 lineType: AREA
+                sequence: 1
           Input Current:
-            height: 100
-            width: 1000
             miny: 0
             units: Ampere
             graphpoints:
               Current:
                 dpName: inputpn_current
                 lineType: AREA
+                sequence: 1
 
       PowerNetInputPhasePhase:
         targetPythonClass: ZenPacks.community.PowerNet.PowerNetInputPhasePhase
@@ -282,14 +270,13 @@ device_classes:
                 rrdtype: GAUGE
         graphs:
           Input Voltage:
-            height: 100
-            width: 1000
             miny: 0
             units: Volt
             graphpoints:
               Voltage:
                 dpName: inputpp_voltage
                 lineType: AREA
+                sequence: 1
 
       PowerNetOutputPhaseNeutral:
         targetPythonClass: ZenPacks.community.PowerNet.PowerNetOutputPhaseNeutral
@@ -310,17 +297,14 @@ device_classes:
                 rrdtype: GAUGE
         graphs:
           Output Voltage:
-            height: 100
-            width: 1000
             miny: 0
             units: Volt
             graphpoints:
               Voltage:
                 dpName: outputpn_voltage
                 lineType: AREA
+                sequence: 1
           Output Current:
-            height: 100
-            width: 1000
             miny: 0
             units: Ampere
             graphpoints:
@@ -328,27 +312,25 @@ device_classes:
                 dpName: outputpn_current
                 lineType: AREA
           Output Load Percentage:
-            height: 100
-            width: 1000
             miny: 0
             units: percent
             graphpoints:
               Load Percentage:
                 dpName: outputpn_loadperc
                 lineType: AREA
+                sequence: 1
           Output Power:
-            height: 100
-            width: 1000
             miny: 0
             units: Watts
             graphpoints:
               Active Power:
                 dpName: outputpn_power
                 lineType: AREA
+                sequence: 1
               Apparent Power:
                 dpName: outputpn_load
                 lineType: AREA
-
+                sequence: 2
 
       PowerNetOutputPhasePhase:
         targetPythonClass: ZenPacks.community.PowerNet.PowerNetOutputPhasePhase
@@ -363,12 +345,11 @@ device_classes:
                 rrdtype: GAUGE
         graphs:
           Output Voltage:
-            height: 100
-            width: 1000
             miny: 0
             units: Volt
             graphpoints:
               Voltage:
                 dpName: outputpp_voltage
                 lineType: AREA
+                sequence: 1
 
