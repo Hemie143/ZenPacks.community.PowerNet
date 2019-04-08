@@ -140,6 +140,44 @@ device_classes:
                   rrdtype: GAUGE
                 upsAdvOutputApparentPower:
                   rrdtype: GAUGE
+        thresholds:
+          Battery Capacity:
+            type: MinMaxThreshold
+            dsnames: [ups_batteryCapacity]
+            eventClass: /Status
+            minval: 80
+            severity: 4
+          Output_load:
+            type: MinMaxThreshold
+            dsnames: [ups_upsOutputLoad]
+            eventClass: /Status
+            maxval: 90
+            severity: 3
+          Runtimeremaining:
+            type: MinMaxThreshold
+            enabled: false
+            dsnames: [ups_batteryRunTimeRemaining]
+            eventClass: /Status
+            minval: 60
+            severity: 3
+          batcurrent:
+            type: MinMaxThreshold
+            dsnames: [ups_upsAdvBatteryCurrent]
+            eventClass: /Status
+            maxval: 0
+            severity: 3
+          voltage_high:
+            type: MinMaxThreshold
+            dsnames: [ups_upsAdvBatteryActualVoltage]
+            eventClass: /Status
+            maxval: 254
+            severity: 3
+          voltage_low:
+            type: MinMaxThreshold
+            dsnames: [ups_upsAdvBatteryActualVoltage]
+            eventClass: /Status
+            minval: 206
+            severity: 3
         graphs:
           Battery Current:
             units: Ampere
@@ -198,7 +236,9 @@ device_classes:
                 dpName: ups_upsOutputLoad
                 lineType: AREA
                 sequence: 2
-
+              Output_load:
+                type: ThresholdGraphPoint
+                threshId: Output_load
       PowerNetInput:
         targetPythonClass: ZenPacks.community.PowerNet.PowerNetInput
         datasources:
@@ -212,6 +252,19 @@ device_classes:
                 rrdtype: GAUGE
               frequency:
                 rrdtype: GAUGE
+        thresholds:
+          input_voltage_high:
+            type: MinMaxThreshold
+            dsnames: [input_nominal_voltage]
+            eventClass: /Status
+            maxval: 254
+            severity: 3
+          input_voltage_low:
+            type: MinMaxThreshold
+            dsnames: [input_nominal_voltage]
+            eventClass: /Status
+            minval: 206
+            severity: 3
         graphs:
           Input Nominal Voltage:
             miny: 0
@@ -295,6 +348,13 @@ device_classes:
                 rrdtype: GAUGE
               power:
                 rrdtype: GAUGE
+        thresholds:
+          output_load:
+            type: MinMaxThreshold
+            dsnames: [outputpn_loadperc]
+            eventClass: /Status
+            maxval: 90
+            severity: 3
         graphs:
           Output Voltage:
             miny: 0
