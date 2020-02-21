@@ -181,23 +181,27 @@ device_classes:
         graphs:
           Battery Current:
             units: Ampere
+            sequence: 1
             graphpoints:
               Current:
                 dpName: ups_upsAdvBatteryCurrent
           Battery RunTime remaining:
             units: minutes
             miny: 0
+            sequence: 2
             graphpoints:
               RunTimeRemaining:
                 dpName: ups_batteryRunTimeRemaining
                 lineType: AREA
           Battery Temperature:
             units:  "\xB0C"
+            sequence: 3
             graphpoints:
               Temperature:
                 dpName: ups_upsAdvBatteryTemperature
           Battery Voltage:
             units: Volt
+            sequence: 4
             graphpoints:
               Nominal voltage:
                 dpName: ups_upsAdvBatteryNominalVoltage
@@ -207,6 +211,7 @@ device_classes:
                 sequence: 2
           Output Frequency:
             units: Hz
+            sequence: 5
             graphpoints:
               Output Frequency:
                 dpName: ups_upsPhaseOutputFrequency
@@ -216,6 +221,7 @@ device_classes:
                 sequence: 2
           Output Power:
             units: Watt
+            sequence: 6
             graphpoints:
               Active Power:
                 dpName: ups_upsAdvOutputActivePower
@@ -227,6 +233,7 @@ device_classes:
             miny: 0
             maxy: 100
             units: percent
+            sequence: 7
             graphpoints:
               Battery Remaining Capacity:
                 dpName: ups_batteryCapacity
